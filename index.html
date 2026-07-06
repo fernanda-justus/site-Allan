@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HydraLife – Consumo Inteligente de Água</title>
+<meta name="description" content="HydraLife é um projeto sobre baixo consumo de água, com pesquisa, análise e soluções para criar o hábito de se hidratar melhor." />
+<style>
+  /* =========================================
+     RESET & VARIÁVEIS
+     ========================================= */
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --azul-900: #0a2540;
+    --azul-700: #0b74d1;
+    --azul-500: #1e9bff;
+    --azul-300: #7ec8ff;
+    --azul-100: #e7f3ff;
+    --verde-500: #22c55e;
+    --verde-300: #86efac;
+    --branco: #ffffff;
+    --cinza-100: #f6f9fc;
+    --cinza-300: #dbe4ee;
+    --cinza-600: #556270;
+    --cinza-900: #1b2a41;
+    --sombra-sm: 0 4px 12px rgba(10, 37, 64, 0.08);
+    --sombra-md: 0 10px 30px rgba(10, 37, 64, 0.12);
+    --sombra-lg: 0 20px 50px rgba(10, 37, 64, 0.18);
+    --raio: 16px;
+    --raio-lg: 24px;
+    --transicao: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    --grad-azul: linear-gradient(135deg, #0b74d1 0%, #1e9bff 60%, #7ec8ff 100%);
+    --grad-hero: linear-gradient(135deg, #0a2540 0%, #0b74d1 55%, #1e9bff 100%);
+  }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--cinza-900);
+    background: var(--cinza-100);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  .container { width: min(1160px, 92%); margin: 0 auto; }
+  section { padding: 90px 0; position: relative; }
+  h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; color: var(--azul-900); }
+  .section-title { text-align: center; font-size: clamp(1.8rem, 3vw, 2.4rem); margin-bottom: 12px; }
+  .section-subtitle { text-align: center; color: var(--cinza-600); max-width: 720px; margin: 0 auto 60px; font-size: 1.05rem; }
+  .badge {
+    display: inline-block; background: var(--azul-100); color: var(--azul-700);
+    padding: 6px 14px; border-radius: 999px; font-size: 0.85rem;
+    font-weight: 600; letter-spacing: 0.5px; margin-bottom: 14px;
+  }
+
+  /* BOTÕES */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 28px; border-radius: 999px;
+    font-weight: 600; font-size: 1rem; border: none; cursor: pointer;
+    transition: transform var(--transicao), box-shadow var(--transicao), background var(--transicao);
+    position: relative; overflow: hidden;
+  }
+  .btn-primary { background: var(--grad-azul); color: #fff; box-shadow: 0 10px 25px rgba(30,155,255,0.35); }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(30,155,255,0.5); }
+  .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.7); }
+  .btn-outline:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+  .btn-verde { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; box-shadow: 0 10px 25px rgba(34,197,94,0.35); }
+  .btn-verde:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(34,197,94,0.5); }
+
+  /* HEADER */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow var(--transicao), background var(--transicao);
+  }
+  header.scrolled { box-shadow: var(--sombra-sm); background: rgba(255,255,255,0.95); }
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--azul-900); }
+  .logo-icon {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--grad-azul);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.1rem; box-shadow: 0 6px 15px rgba(30,155,255,0.4);
+  }
+  .logo span.accent { color: var(--azul-700); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-weight: 500; color: var(--cinza-900); position: relative; transition: color var(--transicao); }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; bottom: -6px;
+    width: 0; height: 2px; background: var(--azul-500);
+    transition: width var(--transicao);
+  }
+  .nav-links a:hover { color: var(--azul-700); }
+  .nav-links a:hover::after { width: 100%; }
+  .menu-toggle { display: none; background: none; border: none; cursor: pointer; font-size: 1.6rem; color: var(--azul-900); }
+
+  @media (max-width: 860px) {
+    .nav-links {
+      position: absolute; top: 72px; right: 4%;
+      background: #fff; flex-direction: column;
+      padding: 20px 26px; border-radius: var(--raio);
+      box-shadow: var(--sombra-md); gap: 16px;
+      transform: translateY(-10px); opacity: 0; pointer-events: none;
+      transition: all var(--transicao);
+    }
+    .nav-links.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .menu-toggle { display: block; }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; background: var(--grad-hero); color: #fff;
+    display: flex; align-items: center;
+    position: relative; overflow: hidden; padding-top: 100px;
+  }
+  .hero::before, .hero::after {
+    content: ""; position: absolute; border-radius: 50%;
+    background: rgba(255,255,255,0.08); filter: blur(2px);
+  }
+  .hero::before { width: 500px; height: 500px; top: -150px; right: -150px; animation: float 8s ease-in-out infinite; }
+  .hero::after { width: 320px; height: 320px; bottom: -100px; left: -80px; animation: float 10s ease-in-out infinite reverse; }
+  @keyframes float { 0%,100% { transform: translateY(0) scale(1);} 50% { transform: translateY(-25px) scale(1.05);} }
+
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; position: relative; z-index: 2; }
+  .hero-text .badge { background: rgba(255,255,255,0.15); color: #fff; backdrop-filter: blur(6px); }
+  .hero-text h1 { color: #fff; font-size: clamp(2.2rem, 4.8vw, 3.6rem); margin-bottom: 20px; }
+  .hero-text h1 .highlight {
+    background: linear-gradient(90deg, #86efac, #7ec8ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero-text p { font-size: 1.1rem; color: rgba(255,255,255,0.85); margin-bottom: 32px; max-width: 540px; }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+
+  .hero-visual { display: flex; justify-content: center; position: relative; }
+  .drop {
+    width: 280px; height: 340px;
+    background: linear-gradient(180deg, #7ec8ff 0%, #1e9bff 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: rotate(-45deg);
+    box-shadow: inset -20px -30px 60px rgba(10,37,64,0.35), 0 30px 60px rgba(10,37,64,0.4);
+    position: relative; animation: floatDrop 4s ease-in-out infinite;
+  }
+  .drop::before {
+    content: ""; position: absolute;
+    width: 60px; height: 90px; background: rgba(255,255,255,0.5);
+    border-radius: 50%; top: 40px; left: 60px; filter: blur(4px);
+  }
+  @keyframes floatDrop { 0%,100% { transform: rotate(-45deg) translateY(0);} 50% { transform: rotate(-45deg) translateY(-18px);} }
+  .ripple {
+    position: absolute; bottom: -20px; left: 50%;
+    width: 320px; height: 40px; transform: translateX(-50%);
+    border-radius: 50%; background: rgba(255,255,255,0.15);
+    animation: ripple 3s ease-in-out infinite;
+  }
+  @keyframes ripple { 0%,100% { transform: translateX(-50%) scale(1); opacity: 0.5;} 50% { transform: translateX(-50%) scale(1.15); opacity: 0.2;} }
+
+  .scroll-indicator {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    color: rgba(255,255,255,0.7); font-size: 0.85rem;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    animation: bounce 2s infinite;
+  }
+  .scroll-indicator::after {
+    content: ""; width: 20px; height: 20px;
+    border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+    transform: rotate(45deg);
+  }
+  @keyframes bounce { 0%,100% { transform: translate(-50%, 0);} 50% { transform: translate(-50%, 10px);} }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; text-align: center; }
+    .hero-text p { margin-inline: auto; }
+    .hero-actions { justify-content: center; }
+    .drop { width: 220px; height: 270px; }
+  }
+
+  /* CARDS */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+  .card {
+    background: #fff; border-radius: var(--raio-lg); padding: 32px 26px;
+    box-shadow: var(--sombra-sm); transition: transform var(--transicao), box-shadow var(--transicao);
+    border: 1px solid var(--cinza-300); position: relative; overflow: hidden;
+  }
+  .card:hover { transform: translateY(-8px); box-shadow: var(--sombra-lg); }
+  .card-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    background: var(--azul-100); color: var(--azul-700);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin-bottom: 18px; transition: transform var(--transicao);
+  }
+  .card:hover .card-icon { transform: rotate(-8deg) scale(1.05); }
+  .card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+  .card p { color: var(--cinza-600); font-size: 0.95rem; }
+
+  /* IMPORTÂNCIA */
+  .importancia { background: #fff; }
+  .importancia .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+  .importancia h2 { font-size: clamp(1.7rem, 2.8vw, 2.3rem); margin-bottom: 18px; }
+  .importancia p { color: var(--cinza-600); margin-bottom: 14px; }
+  .lista-check { list-style: none; margin-top: 20px; display: grid; gap: 12px; }
+  .lista-check li { display: flex; align-items: flex-start; gap: 12px; color: var(--cinza-900); }
+  .check {
+    width: 22px; height: 22px; flex-shrink: 0;
+    background: var(--verde-500); color: #fff; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: bold; margin-top: 3px;
+  }
+  .imp-visual {
+    background: var(--grad-azul); border-radius: var(--raio-lg);
+    padding: 40px; color: #fff; box-shadow: var(--sombra-md);
+    position: relative; overflow: hidden;
+  }
+  .imp-visual::after {
+    content: "💧"; position: absolute; font-size: 12rem;
+    right: -30px; bottom: -50px; opacity: 0.12;
+  }
+  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+  .stat { background: rgba(255,255,255,0.12); padding: 20px; border-radius: var(--raio); backdrop-filter: blur(8px); }
+  .stat .num { font-size: 2.2rem; font-weight: 800; color: #fff; }
+  .stat .lbl { font-size: 0.85rem; opacity: 0.85; }
+
+  @media (max-width: 860px) { .importancia .grid-2 { grid-template-columns: 1fr; } }
+
+  /* PESQUISA */
+  .pesquisa { background: linear-gradient(180deg, var(--cinza-100) 0%, #eaf4ff 100%); }
+  .pesquisa-header {
+    display: flex; gap: 30px; flex-wrap: wrap;
+    justify-content: space-around; margin-bottom: 60px; text-align: center;
+  }
+  .pesquisa-header .stat-block {
+    background: #fff; padding: 24px 40px;
+    border-radius: var(--raio-lg); box-shadow: var(--sombra-sm); min-width: 180px;
+  }
+  .stat-block .big { font-size: 2.6rem; font-weight: 800; color: var(--azul-700); }
+  .stat-block .lbl { color: var(--cinza-600); font-size: 0.9rem; }
+
+  .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 60px; }
+  .chart-card { background: #fff; border-radius: var(--raio-lg); padding: 30px; box-shadow: var(--sombra-sm); }
+  .chart-card h3 { margin-bottom: 24px; font-size: 1.1rem; }
+
+  .bar-chart { display: grid; gap: 18px; }
+  .bar-item .bar-label { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 6px; color: var(--cinza-900); }
+  .bar-track { height: 14px; background: var(--cinza-300); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--grad-azul); border-radius: 999px; width: 0; transition: width 1.6s cubic-bezier(0.25,1,0.5,1); }
+  .bar-fill.verde { background: linear-gradient(90deg, #16a34a, #22c55e); }
+
+  .donut-wrap { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 30px; }
+  .donut {
+    --p: 0; width: 180px; height: 180px; border-radius: 50%;
+    background: conic-gradient(var(--azul-500) calc(var(--p)*1%), var(--cinza-300) 0);
+    display: flex; align-items: center; justify-content: center; position: relative;
+    transition: background 1.6s ease;
+  }
+  .donut::before { content: ""; position: absolute; inset: 18px; background: #fff; border-radius: 50%; }
+  .donut span { position: relative; font-size: 1.8rem; font-weight: 800; color: var(--azul-700); }
+  .donut-legend { display: grid; gap: 10px; font-size: 0.9rem; }
+  .donut-legend div { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--azul-500); }
+  .dot.gray { background: var(--cinza-300); }
+
+  .col-chart {
+    display: flex; align-items: flex-end; justify-content: space-around;
+    gap: 14px; height: 220px; padding: 10px 0; border-bottom: 2px solid var(--cinza-300);
+  }
+  .col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+  .col-bar { width: 100%; background: var(--grad-azul); border-radius: 10px 10px 0 0; height: 0; transition: height 1.6s cubic-bezier(0.25,1,0.5,1); position: relative; }
+  .col-bar span { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; font-weight: 700; color: var(--azul-900); }
+  .col-label { font-size: 0.8rem; color: var(--cinza-600); text-align: center; }
+
+  .analise {
+    margin-top: 60px; background: #fff; padding: 36px;
+    border-radius: var(--raio-lg); box-shadow: var(--sombra-sm);
+    border-left: 6px solid var(--azul-500);
+  }
+  .analise h3 { margin-bottom: 12px; }
+  .analise p { color: var(--cinza-600); }
+
+  @media (max-width: 860px) { .charts { grid-template-columns: 1fr; } }
+
+  /* SOLUÇÃO */
+  .solucao { background: #fff; }
+  .feature-card {
+    background: linear-gradient(160deg, #fff, #f0f8ff);
+    border: 1px solid var(--cinza-300); border-radius: var(--raio-lg);
+    padding: 30px; transition: transform var(--transicao), box-shadow var(--transicao);
+  }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: var(--sombra-md); border-color: var(--azul-300); }
+  .feature-card .card-icon { background: var(--grad-azul); color: #fff; }
+
+  /* SIMULADOR */
+  .simulador { background: var(--grad-hero); color: #fff; position: relative; overflow: hidden; }
+  .simulador::before {
+    content: ""; position: absolute; width: 400px; height: 400px;
+    background: rgba(255,255,255,0.06); border-radius: 50%;
+    top: -100px; left: -100px;
+  }
+  .simulador .section-title { color: #fff; }
+  .simulador .section-subtitle { color: rgba(255,255,255,0.8); }
+  .sim-card {
+    max-width: 620px; margin: 0 auto;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--raio-lg); padding: 40px; text-align: center;
+    box-shadow: var(--sombra-lg); position: relative; z-index: 2;
+  }
+  .sim-card label { display: block; font-weight: 600; margin-bottom: 14px; font-size: 1.05rem; }
+  .sim-input {
+    width: 120px; padding: 14px; border: none; border-radius: 12px;
+    font-size: 1.4rem; text-align: center; font-weight: 700;
+    color: var(--azul-900); outline: none; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  .sim-actions { margin-top: 24px; }
+  .sim-result {
+    margin-top: 28px; padding: 24px; background: rgba(255,255,255,0.15);
+    border-radius: var(--raio); min-height: 90px;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px; transition: all var(--transicao);
+  }
+  .sim-result .litros { font-size: 2.2rem; font-weight: 800; color: #86efac; }
+  .sim-result .msg { font-size: 1rem; color: rgba(255,255,255,0.95); }
+
+  /* DICAS & CURIOSIDADES */
+  .dicas { background: var(--cinza-100); }
+  .curiosidades { background: #fff; }
+  .curi-card {
+    background: linear-gradient(160deg, #e7f3ff, #ffffff);
+    border-radius: var(--raio-lg); padding: 30px; box-shadow: var(--sombra-sm);
+    border-top: 4px solid var(--azul-500); transition: transform var(--transicao);
+  }
+  .curi-card:hover { transform: translateY(-6px); }
+  .curi-card .emoji { font-size: 2rem; margin-bottom: 12px; display: block; }
+
+  /* CONCLUSÃO */
+  .conclusao { background: var(--grad-azul); color: #fff; text-align: center; }
+  .conclusao h2 { color: #fff; font-size: clamp(1.8rem, 3vw, 2.4rem); }
+  .conclusao p { max-width: 720px; margin: 20px auto 32px; font-size: 1.1rem; opacity: 0.9; }
+
+  /* FOOTER */
+  footer { background: var(--azul-900); color: rgba(255,255,255,0.75); padding: 40px 0; text-align: center; }
+  footer .logo { justify-content: center; color: #fff; margin-bottom: 10px; }
+  footer p { font-size: 0.9rem; }
+
+  /* ANIMAÇÕES DE ENTRADA */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: 0.1s; }
+  .reveal.delay-2 { transition-delay: 0.2s; }
+  .reveal.delay-3 { transition-delay: 0.3s; }
+  .reveal.delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="container nav">
+    <a href="#hero" class="logo">
+      <span class="logo-icon">💧</span>
+      Hydra<span class="accent">Life</span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">☰</button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#importancia">Importância</a></li>
+      <li><a href="#pesquisa">Pesquisa</a></li>
+      <li><a href="#solucao">Solução</a></li>
+      <li><a href="#simulador">Simulador</a></li>
+      <li><a href="#dicas">Dicas</a></li>
+    </ul>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <span class="badge">💧 Consumo Inteligente de Água</span>
+      <h1>Beba mais água. <span class="highlight">Viva melhor.</span></h1>
+      <p>
+        Milhões de pessoas consomem menos água do que precisam todos os dias — muitas
+        vezes sem perceber. O HydraLife nasceu para transformar a hidratação em um
+        hábito simples, consciente e sustentável.
+      </p>
+      <div class="hero-actions">
+        <a href="#solucao" class="btn btn-primary">Conheça a solução →</a>
+        <a href="#pesquisa" class="btn btn-outline">Ver pesquisa</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="drop"></div>
+      <div class="ripple"></div>
+    </div>
+  </div>
+  <div class="scroll-indicator">Role para baixo</div>
+</section>
+
+<!-- IMPORTÂNCIA -->
+<section class="importancia" id="importancia">
+  <div class="container">
+    <div class="grid-2">
+      <div class="reveal">
+        <span class="badge">Por que se hidratar?</span>
+        <h2>A água é o combustível do seu corpo.</h2>
+        <p>
+          Cerca de 60% do corpo humano é composto por água. Ela regula a
+          temperatura, transporta nutrientes, elimina toxinas e mantém o
+          funcionamento do cérebro e dos músculos.
+        </p>
+        <p>
+          Beber pouca água — mesmo sem sentir sede — leva à desidratação leve,
+          silenciosa e cumulativa, prejudicando corpo e mente.
+        </p>
+        <ul class="lista-check">
+          <li><span class="check">✓</span> Melhora foco, memória e concentração.</li>
+          <li><span class="check">✓</span> Aumenta energia e disposição no dia a dia.</li>
+          <li><span class="check">✓</span> Ajuda na digestão e no metabolismo.</li>
+          <li><span class="check">✓</span> Contribui para uma pele mais saudável.</li>
+        </ul>
+      </div>
+      <div class="imp-visual reveal delay-2">
+        <h3 style="color:#fff;">Riscos da baixa hidratação</h3>
+        <p style="color:rgba(255,255,255,0.85); margin-top:8px;">
+          Poucos copos por dia podem parecer inofensivos, mas os impactos
+          aparecem ao longo do tempo.
+        </p>
+        <div class="stat-row">
+          <div class="stat">
+            <div class="num"><span class="counter" data-target="60">0</span>%</div>
+            <div class="lbl">do corpo é água</div>
+          </div>
+          <div class="stat">
+            <div class="num"><span class="counter" data-target="2">0</span>L</div>
+            <div class="lbl">consumo mínimo diário</div>
+          </div>
+          <div class="stat">
+            <div class="num"><span class="counter" data-target="75">0</span>%</div>
+            <div class="lbl">das pessoas vivem desidratadas</div>
+          </div>
+          <div class="stat">
+            <div class="num"><span class="counter" data-target="30">0</span>%</div>
+            <div class="lbl">perdem foco por desidratação</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACTOS -->
+<section id="impactos" style="background: var(--cinza-100);">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content;">Impactos</span>
+    <h2 class="section-title reveal">Principais impactos da desidratação</h2>
+    <p class="section-subtitle reveal">
+      Beber pouca água afeta muito mais do que a sede. Veja como isso influencia
+      seu corpo, sua mente e sua rotina.
+    </p>
+    <div class="cards-grid">
+      <div class="card reveal delay-1">
+        <div class="card-icon">😴</div>
+        <h3>Cansaço constante</h3>
+        <p>A desidratação reduz a oxigenação do sangue, causando fadiga e sensação de esgotamento.</p>
+      </div>
+      <div class="card reveal delay-2">
+        <div class="card-icon">🤕</div>
+        <h3>Dores de cabeça</h3>
+        <p>Pouca água afeta a circulação cerebral e provoca enxaquecas frequentes.</p>
+      </div>
+      <div class="card reveal delay-3">
+        <div class="card-icon">🧠</div>
+        <h3>Falta de concentração</h3>
+        <p>Estudos mostram queda de até 30% na atenção em pessoas levemente desidratadas.</p>
+      </div>
+      <div class="card reveal delay-1">
+        <div class="card-icon">📉</div>
+        <h3>Baixa produtividade</h3>
+        <p>Menos foco e mais cansaço se traduzem em rendimento reduzido no trabalho e nos estudos.</p>
+      </div>
+      <div class="card reveal delay-2">
+        <div class="card-icon">❤️</div>
+        <h3>Problemas de saúde</h3>
+        <p>A longo prazo, favorece pedras nos rins, hipertensão e problemas digestivos.</p>
+      </div>
+      <div class="card reveal delay-3">
+        <div class="card-icon">💤</div>
+        <h3>Sono prejudicado</h3>
+        <p>A hidratação inadequada interfere na qualidade do sono e no descanso do corpo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PESQUISA -->
+<section class="pesquisa" id="pesquisa">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content;">Nossa pesquisa</span>
+    <h2 class="section-title reveal">O que descobrimos com 30 participantes</h2>
+    <p class="section-subtitle reveal">
+      Realizamos uma pesquisa com 30 pessoas de diferentes rotinas para entender
+      como está o consumo diário de água e as dificuldades para manter o hábito.
+    </p>
+
+    <div class="pesquisa-header">
+      <div class="stat-block reveal delay-1">
+        <div class="big"><span class="counter" data-target="30">0</span></div>
+        <div class="lbl">Participantes</div>
+      </div>
+      <div class="stat-block reveal delay-2">
+        <div class="big"><span class="counter" data-target="73">0</span>%</div>
+        <div class="lbl">bebem menos de 2L/dia</div>
+      </div>
+      <div class="stat-block reveal delay-3">
+        <div class="big"><span class="counter" data-target="80">0</span>%</div>
+        <div class="lbl">esquecem na rotina</div>
+      </div>
+      <div class="stat-block reveal delay-4">
+        <div class="big"><span class="counter" data-target="90">0</span>%</div>
+        <div class="lbl">querem lembretes</div>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card reveal delay-1">
+        <div class="card-icon">🥤</div>
+        <h3>Consumo abaixo do ideal</h3>
+        <p>A maioria bebe menos de 2 litros de água por dia, ficando abaixo do recomendado.</p>
+      </div>
+      <div class="card reveal delay-2">
+        <div class="card-icon">⏰</div>
+        <h3>Esquecimento na rotina</h3>
+        <p>Muitos se envolvem em tarefas e simplesmente esquecem de beber água.</p>
+      </div>
+      <div class="card reveal delay-3">
+        <div class="card-icon">🥤</div>
+        <h3>Substituição por outras bebidas</h3>
+        <p>Refrigerantes, sucos e cafés acabam substituindo a água ao longo do dia.</p>
+      </div>
+      <div class="card reveal delay-4">
+        <div class="card-icon">🔔</div>
+        <h3>Lembretes ajudariam</h3>
+        <p>A maioria acredita que notificações e metas ajudariam a criar o hábito.</p>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-card reveal">
+        <h3>Quantos litros bebem por dia?</h3>
+        <div class="bar-chart">
+          <div class="bar-item">
+            <div class="bar-label"><span>Menos de 1L</span><span>27%</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="27"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Entre 1L e 2L</span><span>46%</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="46"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Entre 2L e 3L</span><span>20%</span></div>
+            <div class="bar-track"><div class="bar-fill verde" data-w="20"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Mais de 3L</span><span>7%</span></div>
+            <div class="bar-track"><div class="bar-fill verde" data-w="7"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card reveal delay-2">
+        <h3>Esquecem de beber água?</h3>
+        <div class="donut-wrap">
+          <div class="donut" id="donut"><span id="donutValue">0%</span></div>
+          <div class="donut-legend">
+            <div><span class="dot"></span> Sim, esquecem — 80%</div>
+            <div><span class="dot gray"></span> Não esquecem — 20%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card reveal">
+        <h3>Substituem água por outras bebidas?</h3>
+        <div class="col-chart" id="colChart">
+          <div class="col"><div class="col-bar" data-h="65"><span>65%</span></div><div class="col-label">Refrigerantes</div></div>
+          <div class="col"><div class="col-bar" data-h="55"><span>55%</span></div><div class="col-label">Sucos</div></div>
+          <div class="col"><div class="col-bar" data-h="70"><span>70%</span></div><div class="col-label">Cafés</div></div>
+          <div class="col"><div class="col-bar" data-h="35"><span>35%</span></div><div class="col-label">Chás</div></div>
+          <div class="col"><div class="col-bar" data-h="20"><span>20%</span></div><div class="col-label">Nenhuma</div></div>
+        </div>
+      </div>
+
+      <div class="chart-card reveal delay-2">
+        <h3>Usariam um app com lembretes?</h3>
+        <div class="bar-chart">
+          <div class="bar-item">
+            <div class="bar-label"><span>Sim, com certeza</span><span>90%</span></div>
+            <div class="bar-track"><div class="bar-fill verde" data-w="90"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Talvez</span><span>7%</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="7"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-label"><span>Não</span><span>3%</span></div>
+            <div class="bar-track"><div class="bar-fill" data-w="3"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analise reveal">
+      <h3>📊 Análise dos resultados</h3>
+      <p>
+        Os dados mostram um cenário claro: a maior parte dos participantes consome
+        menos água do que o recomendado, principalmente porque esquece durante a
+        rotina e substitui a água por outras bebidas — muitas vezes menos
+        saudáveis. A boa notícia é que 90% acreditam que lembretes automáticos
+        ajudariam a criar o hábito, confirmando a necessidade de uma solução
+        digital simples e acessível como o <strong>HydraLife</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUÇÃO -->
+<section class="solucao" id="solucao">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content;">Nossa solução</span>
+    <h2 class="section-title reveal">HydraLife — hidratação inteligente</h2>
+    <p class="section-subtitle reveal">
+      Um aplicativo pensado para transformar o consumo de água em um hábito
+      leve, motivador e presente na sua rotina.
+    </p>
+    <div class="cards-grid">
+      <div class="feature-card reveal delay-1">
+        <div class="card-icon">🔔</div>
+        <h3>Lembretes inteligentes</h3>
+        <p>Notificações personalizadas para lembrar você de beber água nos momentos certos.</p>
+      </div>
+      <div class="feature-card reveal delay-2">
+        <div class="card-icon">🎯</div>
+        <h3>Metas diárias</h3>
+        <p>Meta calculada de acordo com seu peso, idade e nível de atividade.</p>
+      </div>
+      <div class="feature-card reveal delay-3">
+        <div class="card-icon">📈</div>
+        <h3>Controle de consumo</h3>
+        <p>Registre cada copo e acompanhe seu progresso em tempo real.</p>
+      </div>
+      <div class="feature-card reveal delay-1">
+        <div class="card-icon">📅</div>
+        <h3>Histórico semanal</h3>
+        <p>Visualize sua evolução com gráficos claros do seu consumo semanal.</p>
+      </div>
+      <div class="feature-card reveal delay-2">
+        <div class="card-icon">💡</div>
+        <h3>Dicas de saúde</h3>
+        <p>Conteúdos rápidos sobre hidratação, alimentação e bem-estar.</p>
+      </div>
+      <div class="feature-card reveal delay-3">
+        <div class="card-icon">🏆</div>
+        <h3>Sistema de conquistas</h3>
+        <p>Ganhe medalhas e conquiste desafios ao manter sua meta em dia.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULADOR -->
+<section class="simulador" id="simulador">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content; background: rgba(255,255,255,0.15); color:#fff;">Simulador</span>
+    <h2 class="section-title reveal">Quanta água você bebe por dia?</h2>
+    <p class="section-subtitle reveal">
+      Informe quantos copos de água (aprox. 250 ml) você toma por dia e veja o
+      quanto isso representa em litros — com uma mensagem personalizada.
+    </p>
+    <div class="sim-card reveal">
+      <label for="copos">Copos por dia (250 ml cada)</label>
+      <input type="number" id="copos" class="sim-input" min="0" max="30" value="4" />
+      <div class="sim-actions">
+        <button class="btn btn-verde" id="calcBtn">Calcular consumo</button>
+      </div>
+      <div class="sim-result" id="simResult">
+        <div class="litros">0 L</div>
+        <div class="msg">Informe um valor e clique em calcular.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DICAS -->
+<section class="dicas" id="dicas">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content;">Dicas práticas</span>
+    <h2 class="section-title reveal">Como criar o hábito de beber mais água</h2>
+    <p class="section-subtitle reveal">
+      Pequenas mudanças na rotina fazem uma grande diferença. Experimente estas
+      dicas testadas e aprovadas.
+    </p>
+    <div class="cards-grid">
+      <div class="card reveal delay-1"><div class="card-icon">🧴</div><h3>Ande com uma garrafa</h3><p>Ter uma garrafa sempre por perto é o passo mais simples e eficaz.</p></div>
+      <div class="card reveal delay-2"><div class="card-icon">⏱️</div><h3>Crie horários fixos</h3><p>Beba um copo ao acordar, antes das refeições e ao dormir.</p></div>
+      <div class="card reveal delay-3"><div class="card-icon">📱</div><h3>Use lembretes</h3><p>Apps e alarmes ajudam até o hábito se tornar natural.</p></div>
+      <div class="card reveal delay-1"><div class="card-icon">🍋</div><h3>Dê sabor à água</h3><p>Rodelas de limão, hortelã ou frutas deixam a água mais gostosa.</p></div>
+      <div class="card reveal delay-2"><div class="card-icon">🥗</div><h3>Coma alimentos ricos em água</h3><p>Melancia, pepino e laranja também contribuem para a hidratação.</p></div>
+      <div class="card reveal delay-3"><div class="card-icon">🏅</div><h3>Estabeleça metas</h3><p>Dividir a meta em pequenas porções torna tudo mais fácil.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CURIOSIDADES -->
+<section class="curiosidades">
+  <div class="container">
+    <span class="badge reveal" style="display:block; text-align:center; margin: 0 auto 14px; width:fit-content;">Você sabia?</span>
+    <h2 class="section-title reveal">Curiosidades sobre hidratação</h2>
+    <p class="section-subtitle reveal">Fatos surpreendentes sobre a água e como ela impacta seu corpo.</p>
+    <div class="cards-grid">
+      <div class="curi-card reveal delay-1"><span class="emoji">🧠</span><h3>O cérebro é 75% água</h3><p>Por isso a desidratação afeta rapidamente foco e memória.</p></div>
+      <div class="curi-card reveal delay-2"><span class="emoji">💓</span><h3>Coração agradece</h3><p>A hidratação adequada reduz o esforço cardiovascular.</p></div>
+      <div class="curi-card reveal delay-3"><span class="emoji">🌡️</span><h3>Regula a temperatura</h3><p>A água é essencial no controle térmico do corpo através do suor.</p></div>
+      <div class="curi-card reveal delay-1"><span class="emoji">⚡</span><h3>Energia natural</h3><p>Só 1% de desidratação já reduz sua energia perceptivelmente.</p></div>
+      <div class="curi-card reveal delay-2"><span class="emoji">🦴</span><h3>Articulações lubrificadas</h3><p>A água mantém as articulações saudáveis e sem dor.</p></div>
+      <div class="curi-card reveal delay-3"><span class="emoji">✨</span><h3>Pele mais bonita</h3><p>Hidratação interna reflete diretamente na aparência da pele.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSÃO -->
+<section class="conclusao">
+  <div class="container reveal">
+    <h2>Pequenos goles, grandes mudanças.</h2>
+    <p>
+      Hidratar-se é um dos hábitos mais simples e poderosos que você pode
+      cultivar. Com o HydraLife, criar essa rotina se torna prático, motivador
+      e sustentável. Comece hoje — seu corpo e sua mente vão agradecer.
+    </p>
+    <a href="#simulador" class="btn btn-verde">Testar o simulador →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="logo">
+      <span class="logo-icon">💧</span>
+      Hydra<span class="accent" style="color:var(--azul-300);">Life</span>
+    </div>
+    <p>© <span id="year"></span> HydraLife — Consumo Inteligente de Água. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<script>
+  // HEADER SCROLL
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 30);
+  });
+
+  // MENU MOBILE
+  const toggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => navLinks.classList.remove('open'))
+  );
+
+  // ANO
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // REVEAL
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // CONTADORES
+  const counters = document.querySelectorAll('.counter');
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = +el.dataset.target;
+      const duration = 1400;
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        el.textContent = Math.floor(p * target);
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target;
+      };
+      requestAnimationFrame(step);
+      counterObs.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(c => counterObs.observe(c));
+
+  // BARRAS
+  const bars = document.querySelectorAll('.bar-fill');
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.width = entry.target.dataset.w + '%';
+        barObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  bars.forEach(b => barObs.observe(b));
+
+  // COLUNAS
+  const cols = document.querySelectorAll('.col-bar');
+  const colObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.height = entry.target.dataset.h + '%';
+        colObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  cols.forEach(c => colObs.observe(c));
+
+  // DONUT
+  const donut = document.getElementById('donut');
+  const donutValue = document.getElementById('donutValue');
+  const donutObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const target = 80;
+      const duration = 1600;
+      const start = performance.now();
+      const step = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const v = Math.floor(p * target);
+        donut.style.setProperty('--p', v);
+        donutValue.textContent = v + '%';
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      donutObs.unobserve(donut);
+    });
+  }, { threshold: 0.5 });
+  donutObs.observe(donut);
+
+  // SIMULADOR
+  const calcBtn = document.getElementById('calcBtn');
+  const copos = document.getElementById('copos');
+  const simResult = document.getElementById('simResult');
+
+  function calcular() {
+    let n = parseInt(copos.value);
+    if (isNaN(n) || n < 0) n = 0;
+    if (n > 30) n = 30;
+    const litros = (n * 0.25).toFixed(2).replace('.', ',');
+    let msg = '';
+    if (n === 0) msg = "Você precisa começar hoje mesmo! 💧 Que tal o primeiro copo agora?";
+    else if (n < 4) msg = "Está bem abaixo do ideal. Tente aumentar aos poucos — seu corpo vai sentir a diferença! 🚰";
+    else if (n < 8) msg = "Você está no caminho certo! Só um empurrãozinho para chegar aos 2L diários. 💪";
+    else if (n <= 12) msg = "Excelente! Você está mantendo uma hidratação saudável. Continue assim! 🌟";
+    else msg = "Uau! Muito bem hidratado. Só cuidado para não exagerar — equilíbrio é tudo. 😉";
+
+    simResult.innerHTML = `<div class="litros">${litros} L</div><div class="msg">${msg}</div>`;
+    simResult.style.transform = 'scale(1.02)';
+    setTimeout(() => simResult.style.transform = 'scale(1)', 250);
+  }
+
+  calcBtn.addEventListener('click', calcular);
+  copos.addEventListener('keyup', (e) => { if (e.key === 'Enter') calcular(); });
+</script>
+</body>
+</html>
